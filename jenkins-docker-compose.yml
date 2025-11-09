@@ -15,7 +15,6 @@ services:
       - ./:/workspace
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
     networks:
       - jenkins-network
     restart: unless-stopped
