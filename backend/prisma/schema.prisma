@@ -1,0 +1,91 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  username     String         @unique
+  email        String         @unique
+  contact      String?
+  password     String
+  role         String         @default("user") // "admin" or "user"
+  isActive     Boolean        @default(true)
+  permissions  Permission[]
+  patients     Patient[]
+  mappings     Mapping[]
+  issueRequests IssueRequest[]
+  createdBy    Int?
+  creator      User?          @relation("UserCreatedBy", fields: [createdBy], references: [id])
+  createdUsers User[]         @relation("UserCreatedBy")
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @default(now()) @updatedAt
+}
+
+model Permission {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  canManagePatients Boolean @default(true)
+  canManageDoctors Boolean  @default(true)
+  canViewMappings  Boolean  @default(true)
+  canCreateMappings Boolean @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+
+  @@unique([userId])
+}
+
+model IssueRequest {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject     String
+  description String
+  status      String   @default("pending") // "pending", "in-progress", "resolved", "rejected"
+  priority    String   @default("medium") // "low", "medium", "high"
+  adminNotes  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+}
+
+model Patient {
+  id        Int       @id @default(autoincrement())
+  name      String
+  age       Int
+  disease   String
+  createdBy Int
+  user      User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  mappings  Mapping[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+}
+
+model Doctor {
+  id         Int       @id @default(autoincrement())
+  name       String
+  specialty  String
+  experience Int       @default(0)
+  contact    String    @default("")
+  mappings   Mapping[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+}
+
+model Mapping {
+  id        Int      @id @default(autoincrement())
+  patientId Int
+  doctorId  Int
+  createdBy Int?
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}

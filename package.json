@@ -1,27 +1,25 @@
 {
-  "name": "healthcare-backend",
+  "name": "healthcare-management",
   "version": "1.0.0",
-  "description": "Healthcare backend with Node.js, Express, JWT, Prisma, and PostgreSQL",
-  "main": "src/server.js",
+  "description": "Healthcare Management System - Full Stack Application",
+  "private": true,
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
-    "migrate": "prisma migrate dev --name init",
-    "generate": "prisma generate"
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm start",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "prisma:migrate": "cd backend && npm run migrate",
+    "prisma:generate": "cd backend && npm run generate",
+    "prisma:studio": "cd backend && npx prisma studio"
   },
-  "keywords": [],
+  "keywords": ["healthcare", "management", "fullstack"],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@prisma/client": "^6.15.0",
-    "bcryptjs": "^2.4.3",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.2",
-    "pg": "^8.11.5",
-    "prisma": "^6.15.0"
-  },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "concurrently": "^8.2.2"
   }
 }
